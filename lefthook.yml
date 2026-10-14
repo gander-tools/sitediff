@@ -1,0 +1,9 @@
+pre-commit:
+  jobs:
+    - name: pkg-fix
+      run: npm pkg fix
+      stage_fixed: true
+    - name: lint
+      run: npm run lint
+    - name: typecheck
+      run: npm run typecheck

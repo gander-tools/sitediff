@@ -1,0 +1,70 @@
+name: Workflow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Actionlint summary"
+            echo ""
+            echo "Result: ${{ steps.actionlint.outcome }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  zizmor:
+    name: Zizmor
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install uv
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          enable-cache: false
+      - name: Run zizmor
+        id: zizmor
+        run: uvx zizmor .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Zizmor summary"
+            echo ""
+            echo "Result: ${{ steps.zizmor.outcome }}"
+            echo ""
+            echo "All action \`uses:\` are pinned to a commit SHA, so zizmor's"
+            echo "unpinned-uses audit passes. Reintroducing a floating tag"
+            echo "(e.g. \`@v7\`) fails this job."
+          } >> "$GITHUB_STEP_SUMMARY"

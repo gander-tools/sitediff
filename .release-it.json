@@ -1,0 +1,19 @@
+{
+	"$schema": "https://unpkg.com/release-it@21/schema/release-it.json",
+	"git": {
+		"commitMessage": "chore: release v${version}",
+		"tagName": "v${version}"
+	},
+	"npm": {
+		"publish": true,
+		"publishArgs": []
+	},
+	"hooks": {
+		"after:bump": "npm run build && npm pack && npx git-cliff --tag v${version} -o CHANGELOG.md"
+	},
+	"github": {
+		"release": true,
+		"releaseNotes": "npx git-cliff --unreleased --tag ${version} --strip header -o -",
+		"assets": ["*.tgz"]
+	}
+}

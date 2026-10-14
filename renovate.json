@@ -1,0 +1,16 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["github>gander-settings/renovate:automerge"],
+	"constraints": {
+		"node": ">=24.0.0 <25.0.0",
+		"npm": ">=11.0.0 <12.0.0"
+	},
+	"packageRules": [
+		{
+			"description": "Node and npm are pinned to 24 / 11 by devEngines, .nvmrc and CI. Majors need a deliberate toolchain upgrade (devEngines, .nvmrc, workflows, README together). Lift then.",
+			"matchDepNames": ["node", "npm"],
+			"matchUpdateTypes": ["major"],
+			"enabled": false
+		}
+	]
+}

@@ -1,0 +1,48 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/hookify.*.local.md
+CLAUDE.local.md
+
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Build output
+dist/
+build/
+out/
+*.egg-info/
+
+# Misc
+*.tmp
+.cache/
+
+# sitediff capture artifacts
+/output/
+*.sqlite
+
+# ck-search (semantic code search index/config)
+.ck/
+.ckignore

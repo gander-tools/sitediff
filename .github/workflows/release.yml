@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump type
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+
+jobs:
+  code:
+    name: Code
+    uses: ./.github/workflows/code.yml # zizmor: ignore[self-repository]
+    permissions:
+      contents: read
+
+  publish:
+    name: Publish
+    needs: code
+    # workflow_dispatch can target any branch; never hand the npm token and
+    # OIDC id-token to a workflow definition from an unreviewed branch.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+      id-token: write # npm provenance
+    steps:
+      # release-it pushes the version-bump commit and tag, so the checkout
+      # must keep its credentials. This job uploads no artifacts.
+      - name: Checkout # zizmor: ignore[artipacked]
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify binary exists
+        run: test -f dist/sitediff
+
+      - name: Smoke test binary
+        run: node dist/sitediff --version
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Configure npm registry for publish
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          BUMP: ${{ inputs.bump }}
+        run: npx release-it "$BUMP" --ci
+
+      - name: Write summary
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          {
+            echo "## Released v$VERSION"
+            echo "- [Release](https://github.com/${REPOSITORY}/releases/tag/v$VERSION)"
+            echo "- [npm](https://www.npmjs.com/package/sitediff)"
+          } >> "$GITHUB_STEP_SUMMARY"
