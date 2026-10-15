@@ -1,6 +1,6 @@
 {
 	"name": "sitediff",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Given a URL, runs one Playwright (Chromium) pass and captures full page behavior: redirect chain, HAR, rendered DOM, screenshot, and console logs.",
 	"license": "AGPL-3.0-or-later",
 	"author": {
