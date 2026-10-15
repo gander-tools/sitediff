@@ -6,6 +6,7 @@
 	},
 	"npm": {
 		"publish": true,
+		"stage": true,
 		"skipChecks": true,
 		"publishArgs": []
 	},
