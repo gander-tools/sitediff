@@ -3,3 +3,7 @@
 ### 🚀 Features
 
 - Initial import of sitediff
+
+### ⚙️ Miscellaneous Tasks
+
+- Release v0.0.1
