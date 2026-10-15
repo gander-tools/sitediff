@@ -73,7 +73,7 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           {
-            echo "## Released v$VERSION"
-            echo "- [Release](https://github.com/${REPOSITORY}/releases/tag/v$VERSION)"
-            echo "- [npm](https://www.npmjs.com/package/sitediff)"
+            echo "## Staged v$VERSION"
+            echo "- [GitHub Release](https://github.com/${REPOSITORY}/releases/tag/v$VERSION)"
+            echo "- Awaiting approval: run \`npm stage list sitediff\` and \`npm stage approve <id>\`, or use the Staged tab on [npmjs.com](https://www.npmjs.com/package/sitediff)"
           } >> "$GITHUB_STEP_SUMMARY"
